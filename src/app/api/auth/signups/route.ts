@@ -1,3 +1,9 @@
+// export function GET(){
+//     return Response.json({
+//         message:"signup"
+//     })
+// }
+
 import {prisma} from "@/lib/prisma"
 import { hashPassword } from "@/lib/bcrypt"
 import { generateToken } from "@/lib/jwt"
