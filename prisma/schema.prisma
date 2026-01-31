@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  name     String
+  email    String  @unique
+  username String  @unique
+  password String
+
+  // relations
+  parties  Party[]   @relation("PartyMembers")
+  recipes  Recipe[]
+  adminOf  Party[]   @relation("PartyAdmin")
+}
+
+model Party {
+  // 5 digit random code (manually generated in backend)
+  id       Int    @id
+  name     String
+
+  // admin (creator)
+  adminId  Int
+  admin    User   @relation("PartyAdmin", fields: [adminId], references: [id])
+
+  // members (many-to-many)
+  members  User[] @relation("PartyMembers")
+
+  // recipes in party
+  recipes  Recipe[]
+}
+
+model Recipe {
+  id          Int      @id @default(autoincrement())
+  name        String
+  category    Category @default(nonVeg)
+
+  // arrays
+  steps       String[]      // instructions (index based)
+  ingredients String[]      // ingredients list
+
+  // relations
+  partyId     Int
+  createdById Int
+
+  party       Party @relation(fields: [partyId], references: [id])
+  createdBy   User  @relation(fields: [createdById], references: [id])
+}
+
+enum Category {
+  veg
+  nonVeg
+}
